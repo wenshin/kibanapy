@@ -31,33 +31,44 @@ class DashboardTestCase(unittest.TestCase):
     def setUp(self):
         query = 'abc'
         self.kibana_url = 'http://10.8.150.69:5601/elasticsearch/.kibana'
-        self.vis1 = Visualization('kibanapyVis1', 'pie', PORT_AGGS, query=query)
-        self.vis1.use(self.kibana_url)
+        self.vis = Visualization('kibanapyVis1', 'pie', PORT_AGGS, query=query)
+        self.vis.use(self.kibana_url)
+
+        self.ds = Dashboard('kibanapyD1')
+        self.ds.use(self.kibana_url)
+        self.ds.add_visualization(self.vis)
 
     def tearDown(self):
-        self.vis1.delete()
+        self.vis.delete()
+        self.ds.delete()
 
     def test_save_visualization_not_overwrite_success(self):
         ''' 测试保存 visualization 使用非复写模式成功，重复写入返回409 Conflict
         '''
-        resp = self.vis1.save()
+        resp = self.vis.save()
         self.assertEqual(resp.status_code, 201, resp.json())
 
-        resp = self.vis1.save()
+        resp = self.vis.save()
         self.assertEqual(resp.status_code, 409, resp.json())
 
     def test_save_visualization_with_overwrite_success(self):
         ''' 测试保存 visualization 使用复写模式，重复写入成功
         '''
-        resp = self.vis1.save(overwrite=True)
+        resp = self.vis.save(overwrite=True)
         self.assertEqual(resp.status_code, 201, resp.json())
 
 
     def test_save_dashboard_not_overwrite_success(self):
         ''' 测试保存 dashboard 使用非复写模式
         '''
-        ds1 = Dashboard('kibanapyD1')
-        ds1.use(self.kibana_url)
-        ds1.add_visualization(self.vis1)
-        resp = ds1.save(self.kibana_url)
+        resp = self.ds.save()
+        self.assertEqual(resp.status_code, 201, resp.json())
+
+        resp = self.ds.save()
+        self.assertEqual(resp.status_code, 409, resp.json())
+
+    def test_save_dashboard_with_overwrite_success(self):
+        ''' 测试保存 dashboard 使用复写模式，重复写入成功
+        '''
+        resp = self.ds.save(overwrite=True)
         self.assertEqual(resp.status_code, 201, resp.json())
