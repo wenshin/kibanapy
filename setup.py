@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from . import kibanapy
 
 try:
     from setuptools import setup
@@ -22,8 +23,8 @@ with open('requirements_dev.txt') as requires_dev_file:
 
 setup(
     name='kibanapy',
-    version='0.1.0',
-    description="A util to create kibana dashboard",
+    version=kibanapy.__version__,
+    description="A python util to create kibana dashboard",
     long_description=readme + '\n\n' + history,
     author="kibanapy",
     author_email='yanwx@knownsec.com',
