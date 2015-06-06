@@ -2,10 +2,10 @@
 # coding=utf-8
 
 import json
-import requests
+from .kibana import KibanaService
 
 
-class Visualization(object):
+class Visualization(KibanaService):
 
     DEFAULT_POSITION = {
         # 宽，整数，使用12等分栅格系统
@@ -28,7 +28,7 @@ class Visualization(object):
         'shareYAxis': True
     }
 
-    DEFAULT_SEARCH_SOURCE_JSON = {
+    CUSTOM_SEARCH_SOURCE_JSON = {
         'filter': [],
         'index': '*',
         'query': {
@@ -52,6 +52,9 @@ class Visualization(object):
         :param position: Kibana 的位置和大小配置
         :param config: Kibana 图表信息配置，如：是否显示图例等
         '''
+        super(Visualization, self).__init__()
+
+        position.update(self.DEFAULT_POSITION)
         chart_config.update(self.DEFAULT_CHART_CONFIG)
 
         self.title = title
@@ -59,9 +62,9 @@ class Visualization(object):
         self.aggs = aggs
         self.query = query
         self.desc = desc
-        self.position = position.update(self.DEFAULT_POSITION)
+        self.position = position
         self.chart_config = chart_config
-        self._search_source_json = self.DEFAULT_SEARCH_SOURCE_JSON.copy()
+        self._search_source_json.update(self.CUSTOM_SEARCH_SOURCE_JSON)
 
     @property
     def search_source_json(self):
@@ -84,27 +87,16 @@ class Visualization(object):
         vis['type'] = self.chart_type
         return json.dumps(vis)
 
-    def use(self, kibana_url):
-        self.url = self.url_pattern.format(base_url=kibana_url, id=self.title)
-
-    def save(self, overwrite=False):
-        data = {}
-        data['title'] = self.title
-        data['visState'] = self.vis_state
-        data['description'] = self.desc
-        data['version'] = 1
-        data['kibanaSavedObjectMeta'] = {}
-        data['kibanaSavedObjectMeta']['searchSourceJSON'] = self.search_source_json
-
-        params = {}
-        if not overwrite:
-            params['op_type'] = 'create'
-        headers = {'content-type': 'application/json; charset=UTF-8'}
-        return requests.post(self.url, params=params,
-                             data=json.dumps(data), headers=headers)
-
-    def delete(self):
-        return requests.delete(self.url)
+    @property
+    def data(self):
+        d = {}
+        d['title'] = self.title
+        d['visState'] = self.vis_state
+        d['description'] = self.desc
+        d['version'] = 1
+        d['kibanaSavedObjectMeta'] = {}
+        d['kibanaSavedObjectMeta']['searchSourceJSON'] = self.search_source_json
+        return d
 
     @property
     def config(self):
@@ -116,16 +108,3 @@ class Visualization(object):
         conf['type'] = 'visualization'
         conf.update(self.position)
         return conf
-
-
-class Chart(object):
-
-    DEFAULT_PARAMS = {
-        'addLegend': True,
-        'addTooltip': True,
-        'isDonut': False,
-        'shareYAxis': True
-    }
-
-    def __init__(self, chart_type, chart_params=DEFAULT_PARAMS.copy()):
-        self.chart_type
