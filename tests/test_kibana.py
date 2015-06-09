@@ -68,3 +68,10 @@ class DashboardTestCase(unittest.TestCase):
         '''
         resp = self.ds.save(overwrite=True)
         self.assertEqual(resp.status_code, 201, resp.json())
+
+    def test_dashboard_share_link(self):
+        '''测试获取 dashboard 的分享链接
+        '''
+        share_link = self.ds.get_share_link(embed=True)
+        self.assertTrue('kibanapyVis1' in share_link)
+

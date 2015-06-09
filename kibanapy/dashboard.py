@@ -68,7 +68,7 @@ class Dashboard(KibanaService):
 
         query = {}
         query['_a'] = urllib.quote(rison.dumps(_a))
-        query['_q'] = urllib.quote(rison.dumps(_g))
+        query['_g'] = urllib.quote(rison.dumps(_g))
 
         share_url = self.url_pattern_share.format(
             base_url=self.base_url, title=self.title,
