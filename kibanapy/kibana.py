@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
+import os
 import json
 import requests
 
@@ -18,11 +19,16 @@ class KibanaService(object):
         }
     }
 
-    def __init__(self):
+    ELASTICSEARCH_URL = "elasticsearch"
+    INDEX = ".kibana"
+
+    def __init__(self, host='127.0.0.1', port=5601):
+        self.base_url = 'http://%s:%s' % (host, port)
         self._search_source_json = self.DEFAULT_SEARCH_SOURCE_JSON.copy()
 
-    def use(self, kibana_url):
-        self.url = self.url_pattern.format(base_url=kibana_url, id=self.title)
+    @property
+    def url(self):
+        return self.base_url
 
     def save(self, overwrite=False):
         params = {} if overwrite else {'op_type': 'create'}
@@ -32,3 +38,7 @@ class KibanaService(object):
 
     def delete(self):
         return requests.delete(self.url)
+
+
+class KibanaElasticsearchOperator(KibanaService):
+    pass

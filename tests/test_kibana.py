@@ -4,16 +4,14 @@
 import unittest
 from kibanapy.dashboard import Dashboard
 from kibanapy.visualization import Visualization
-from kibanapy.kibanapy import KibanaServer
 
 
 PORT_AGGS = [{
     'id': '1',
     'params': {'field': 'target'},
     'schema': 'metric',
-    'type': 'cardinality'},
-
-{
+    'type': 'cardinality'
+}, {
     'id': '2',
     'params': {
         'field': 'portinfo.port',
@@ -30,12 +28,11 @@ class DashboardTestCase(unittest.TestCase):
 
     def setUp(self):
         query = 'abc'
-        self.kibana_url = 'http://10.8.150.69:5601/elasticsearch/.kibana'
-        self.vis = Visualization('kibanapyVis1', 'pie', PORT_AGGS, query=query)
-        self.vis.use(self.kibana_url)
+        self.kibana_host = '10.8.150.69'
+        self.vis = Visualization(
+            'kibanapyVis1', 'pie', PORT_AGGS, query=query, host=self.kibana_host)
 
-        self.ds = Dashboard('kibanapyD1')
-        self.ds.use(self.kibana_url)
+        self.ds = Dashboard('kibanapyD1', host=self.kibana_host)
         self.ds.add_visualization(self.vis)
 
     def tearDown(self):
@@ -56,7 +53,6 @@ class DashboardTestCase(unittest.TestCase):
         '''
         resp = self.vis.save(overwrite=True)
         self.assertEqual(resp.status_code, 201, resp.json())
-
 
     def test_save_dashboard_not_overwrite_success(self):
         ''' 测试保存 dashboard 使用非复写模式
