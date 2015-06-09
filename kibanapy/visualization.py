@@ -44,15 +44,15 @@ class Visualization(KibanaService):
         }
     }
 
-    url_pattern = '{base_url}/visualization/{id}'
+    url_pattern = '{base_url}/elasticsearch/{index}/visualization/{id}'
 
     def __init__(self, title, chart_type, aggs=None, query=None,
-                 desc='', position={}, chart_config={}):
+                 desc='', position={}, chart_config={}, **kwargs):
         '''
         :param position: Kibana 的位置和大小配置
         :param config: Kibana 图表信息配置，如：是否显示图例等
         '''
-        super(Visualization, self).__init__()
+        super(Visualization, self).__init__(**kwargs)
 
         position.update(self.DEFAULT_POSITION)
         chart_config.update(self.DEFAULT_CHART_CONFIG)
@@ -65,6 +65,11 @@ class Visualization(KibanaService):
         self.position = position
         self.chart_config = chart_config
         self._search_source_json.update(self.CUSTOM_SEARCH_SOURCE_JSON)
+
+    @property
+    def url(self):
+        return self.url_pattern.format(
+            base_url=self.base_url, index=self.INDEX, id=self.title)
 
     @property
     def search_source_json(self):
