@@ -1,3 +1,6 @@
+MAKE = make
+KS_PYPI = http://websoc-dev.intra.knownsec.com:3141/testuser/dev
+
 .PHONY: clean-pyc clean-build docs clean
 
 help:
@@ -7,11 +10,7 @@ help:
 	@echo "clean-test - remove test and coverage artifacts"
 	@echo "lint - check style with flake8"
 	@echo "test - run tests quickly with the default Python"
-	@echo "test-all - run tests on every Python version with tox"
-	@echo "coverage - check code coverage quickly with the default Python"
-	@echo "docs - generate Sphinx HTML documentation, including API docs"
 	@echo "release - package and upload a release"
-	@echo "dist - package"
 	@echo "install - install the package to the active Python's site-packages"
 
 clean: clean-build clean-pyc clean-test
@@ -38,16 +37,7 @@ lint:
 	flake8 kibanapy tests
 
 test:
-	python setup.py test
-
-test-all:
-	tox
-
-coverage:
-	coverage run --source kibanapy setup.py test
-	coverage report -m
-	coverage html
-	open htmlcov/index.html
+	nosetests tests
 
 docs:
 	rm -f docs/kibanapy.rst
@@ -57,14 +47,11 @@ docs:
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html
 
-release: clean
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
-
-dist: clean
-	python setup.py sdist
-	python setup.py bdist_wheel
-	ls -l dist
+release: clean test
+	devpi use $(KS_PYPI)
+	devpi login testuser
+	devpi upload
+	$(MAKE) clean
 
 install: clean
 	python setup.py install

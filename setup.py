@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from . import kibanapy
+import kibanapy
 
 try:
     from setuptools import setup
@@ -17,9 +17,13 @@ with open('HISTORY.rst') as history_file:
 
 with open('requirements.txt') as requires_file:
     requirements = requires_file.read().split('\n')
+    if not requirements[-1]:
+        requirements[:-1]
 
 with open('requirements_dev.txt') as requires_dev_file:
-    test_requirements = requires_dev_file.read().split('\n')
+    requirements_dev = requires_dev_file.read().split('\n')
+    if not requirements[-1]:
+        requirements[:-1]
 
 setup(
     name='kibanapy',
@@ -52,5 +56,5 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
     test_suite='tests',
-    tests_require=test_requirements
+    tests_require=requirements_dev
 )
