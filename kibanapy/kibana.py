@@ -22,8 +22,11 @@ class KibanaService(object):
     ELASTICSEARCH_URL = "elasticsearch"
     INDEX = ".kibana"
 
-    def __init__(self, host='127.0.0.1', port=5601, query='*'):
+    def __init__(self, host='127.0.0.1', port=5601, query='*',
+                 search_source_filter=[]):
         self.base_url = 'http://%s:%s' % (host, port)
+        self.search_source_filter = search_source_filter
+
         self._query = query
         self._search_source_json = self.DEFAULT_SEARCH_SOURCE_JSON.copy()
 
@@ -43,6 +46,7 @@ class KibanaService(object):
 
     @property
     def search_source_json(self):
+        self._search_source_json['filter'] = self.search_source_filter
         self._search_source_json['query'] = self.query
         return json.dumps(self._search_source_json)
 
