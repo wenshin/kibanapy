@@ -13,34 +13,17 @@ class Dashboard(KibanaService):
     url_pattern = '{base_url}/elasticsearch/{index}/dashboard/{id}'
     url_pattern_share = '{base_url}/#/dashboard/{title}?{query}'
 
-    def __init__(self, title, id=None, description='', query=None, **kwargs):
+    def __init__(self, title, id=None, description='', **kwargs):
         super(Dashboard, self).__init__(**kwargs)
         self.id = id or title
         self.title = title
         self.desc = description
         self.panels = []
-        self._query = query
 
     @property
     def url(self):
         return self.url_pattern.format(base_url=self.base_url,
                                        index=self.INDEX, id=self.id)
-
-    @property
-    def query(self):
-        if isinstance(self._query, str) or isinstance(self._query, unicode):
-            query_string = {
-                'query': self._query,
-                'analyze_wildcard': True
-            }
-            return {'query_string': query_string}
-        elif isinstance(self._query, dict):
-            return self._query
-
-    @property
-    def search_source_json(self):
-        self._search_source_json['query'] = self.query
-        return json.dumps(self._search_source_json)
 
     @property
     def data(self):

@@ -75,6 +75,8 @@ class DashboardTestCase(unittest.TestCase):
         '''
         share_link = self.ds.get_share_link(embed=True)
         self.assertTrue('kibanapyVis1' in share_link)
+        self.assertTrue('analyze_wildcard' in share_link)
+        self.assertTrue(urllib.quote('*') in share_link)
         self.assertTrue(urllib.quote('!') in share_link)
         self.assertTrue(urllib.quote('(') in share_link)
         self.assertTrue(urllib.quote(':') in share_link)
