@@ -46,7 +46,7 @@ class Visualization(KibanaService):
 
     url_pattern = '{base_url}/elasticsearch/{index}/visualization/{id}'
 
-    def __init__(self, title, chart_type, aggs=None, query=None,
+    def __init__(self, title, chart_type, id=None, aggs=None, query=None,
                  desc='', position={}, chart_config={}, **kwargs):
         '''
         :param position: Kibana 的位置和大小配置
@@ -57,6 +57,7 @@ class Visualization(KibanaService):
         position.update(self.DEFAULT_POSITION)
         chart_config.update(self.DEFAULT_CHART_CONFIG)
 
+        self.id = id or title
         self.title = title
         self.chart_type = chart_type
         self.aggs = aggs
@@ -69,7 +70,7 @@ class Visualization(KibanaService):
     @property
     def url(self):
         return self.url_pattern.format(
-            base_url=self.base_url, index=self.INDEX, id=self.title)
+            base_url=self.base_url, index=self.INDEX, id=self.id)
 
     @property
     def search_source_json(self):
@@ -109,7 +110,7 @@ class Visualization(KibanaService):
         返回Dashboard需要的可视化配置信息
         '''
         conf = {}
-        conf['id'] = self.title
+        conf['id'] = self.id
         conf['type'] = 'visualization'
         conf.update(self.position)
         return conf

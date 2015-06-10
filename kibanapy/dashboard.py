@@ -13,8 +13,9 @@ class Dashboard(KibanaService):
     url_pattern = '{base_url}/elasticsearch/{index}/dashboard/{id}'
     url_pattern_share = '{base_url}/#/dashboard/{title}?{query}'
 
-    def __init__(self, title, description='', query=None, **kwargs):
+    def __init__(self, title, id=None, description='', query=None, **kwargs):
         super(Dashboard, self).__init__(**kwargs)
+        self.id = id or title
         self.title = title
         self.desc = description
         self.panels = []
@@ -23,7 +24,7 @@ class Dashboard(KibanaService):
     @property
     def url(self):
         return self.url_pattern.format(base_url=self.base_url,
-                                       index=self.INDEX, id=self.title)
+                                       index=self.INDEX, id=self.id)
 
     @property
     def query(self):

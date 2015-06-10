@@ -30,7 +30,7 @@ class DashboardTestCase(unittest.TestCase):
         query = 'abc'
         self.kibana_host = '10.8.150.69'
         self.vis = Visualization(
-            'kibanapyVis1', 'pie', PORT_AGGS, query=query, host=self.kibana_host)
+            'kibanapyVis1', 'pie', aggs=PORT_AGGS, query=query, host=self.kibana_host)
 
         self.ds = Dashboard('kibanapyD1', host=self.kibana_host)
         self.ds.add_visualization(self.vis)
@@ -74,4 +74,3 @@ class DashboardTestCase(unittest.TestCase):
         '''
         share_link = self.ds.get_share_link(embed=True)
         self.assertTrue('kibanapyVis1' in share_link)
-
