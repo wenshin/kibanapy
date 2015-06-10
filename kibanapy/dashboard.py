@@ -4,7 +4,7 @@
 import json
 import urllib
 
-from .lib import rison
+from .libs import rison
 from .kibana import KibanaService
 
 

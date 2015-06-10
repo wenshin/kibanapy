@@ -4,7 +4,7 @@
 import kibanapy
 
 try:
-    from setuptools import setup
+    from setuptools import setup, find_packages
 except ImportError:
     from distutils.core import setup
 
@@ -33,11 +33,7 @@ setup(
     author="kibanapy",
     author_email='yanwx@knownsec.com',
     url='https://github.com/wenshin/kibanapy',
-    packages=[
-        'kibanapy',
-    ],
-    package_dir={'kibanapy':
-                 'kibanapy'},
+    packages=find_packages(exclude=['tests']),
     include_package_data=True,
     install_requires=requirements,
     license="BSD",
