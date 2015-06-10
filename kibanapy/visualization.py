@@ -46,7 +46,7 @@ class Visualization(KibanaService):
 
     url_pattern = '{base_url}/elasticsearch/{index}/visualization/{id}'
 
-    def __init__(self, title, chart_type, id=None, aggs=None, query=None,
+    def __init__(self, title, chart_type, id=None, aggs=None,
                  desc='', position={}, chart_config={}, **kwargs):
         '''
         :param position: Kibana 的位置和大小配置
@@ -61,7 +61,6 @@ class Visualization(KibanaService):
         self.title = title
         self.chart_type = chart_type
         self.aggs = aggs
-        self.query = query
         self.desc = desc
         self.position = position
         self.chart_config = chart_config
@@ -71,18 +70,6 @@ class Visualization(KibanaService):
     def url(self):
         return self.url_pattern.format(
             base_url=self.base_url, index=self.INDEX, id=self.id)
-
-    @property
-    def search_source_json(self):
-        if isinstance(self.query, str) or isinstance(self.query, unicode):
-            query_string = {
-                'query': self.query,
-                'analyze_wildcard': True
-            }
-            self._search_source_json['query']['query_string'] = query_string
-        elif isinstance(self.query, dict):
-            self._search_source_json['query'] = self.query
-        return json.dumps(self._search_source_json)
 
     @property
     def vis_state(self):
