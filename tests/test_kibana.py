@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
+import urllib
 import unittest
 from kibanapy.dashboard import Dashboard
 from kibanapy.visualization import Visualization
@@ -74,3 +75,7 @@ class DashboardTestCase(unittest.TestCase):
         '''
         share_link = self.ds.get_share_link(embed=True)
         self.assertTrue('kibanapyVis1' in share_link)
+        self.assertTrue(urllib.quote('!') in share_link)
+        self.assertTrue(urllib.quote('(') in share_link)
+        self.assertTrue(urllib.quote(':') in share_link)
+        self.assertTrue(urllib.quote('') in share_link)

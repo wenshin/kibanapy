@@ -68,8 +68,8 @@ class Dashboard(KibanaService):
         _g['time'] = {'from': 'now/y', 'mode': 'quick', 'to': 'now/y'}
 
         query = {}
-        query['_a'] = urllib.quote(rison.dumps(_a))
-        query['_g'] = urllib.quote(rison.dumps(_g))
+        query['_a'] = rison.dumps(_a).encode('utf-8')
+        query['_g'] = rison.dumps(_g).encode('utf-8')
 
         share_url = self.url_pattern_share.format(
             base_url=self.base_url, title=self.title,
