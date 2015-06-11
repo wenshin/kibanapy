@@ -2,6 +2,8 @@
 # coding=utf-8
 
 import json
+import copy
+
 from .kibana import KibanaService
 
 
@@ -53,12 +55,12 @@ class Visualization(KibanaService):
         :param config: Kibana 图表信息配置，如：是否显示图例等
         '''
         super(Visualization, self).__init__(**kwargs)
-        _position = self.DEFAULT_POSITION.copy()
+
+        _position = copy.deepcopy(self.DEFAULT_POSITION)
         _position.update(position)
-        _chart_config = self.DEFAULT_CHART_CONFIG.copy()
+
+        _chart_config = copy.deepcopy(self.DEFAULT_CHART_CONFIG)
         _chart_config.update(chart_config)
-        _ssj = self.CUSTOM_SEARCH_SOURCE_JSON.copy()
-        _ssj.update(self._search_source_json)
 
         self.id = id or title
         self.title = title
@@ -67,7 +69,7 @@ class Visualization(KibanaService):
         self.desc = desc
         self.position = _position
         self.chart_config = _chart_config
-        self._search_source_json = _ssj
+        self._search_source_json.update(self.CUSTOM_SEARCH_SOURCE_JSON)
 
     @property
     def url(self):
