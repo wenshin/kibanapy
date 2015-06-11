@@ -53,18 +53,21 @@ class Visualization(KibanaService):
         :param config: Kibana 图表信息配置，如：是否显示图例等
         '''
         super(Visualization, self).__init__(**kwargs)
-
-        position.update(self.DEFAULT_POSITION)
-        chart_config.update(self.DEFAULT_CHART_CONFIG)
+        _position = self.DEFAULT_POSITION.copy()
+        _position.update(position)
+        _chart_config = self.DEFAULT_CHART_CONFIG.copy()
+        _chart_config.update(chart_config)
+        _ssj = self.CUSTOM_SEARCH_SOURCE_JSON.copy()
+        _ssj.update(self._search_source_json)
 
         self.id = id or title
         self.title = title
         self.chart_type = chart_type
         self.aggs = aggs
         self.desc = desc
-        self.position = position
-        self.chart_config = chart_config
-        self._search_source_json.update(self.CUSTOM_SEARCH_SOURCE_JSON)
+        self.position = _position
+        self.chart_config = _chart_config
+        self._search_source_json = _ssj
 
     @property
     def url(self):
