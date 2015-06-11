@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-import os
 import json
 import requests
+import copy
 
 
 class KibanaService(object):
@@ -28,7 +28,7 @@ class KibanaService(object):
         self.search_source_filter = search_source_filter
 
         self._query = query
-        self._search_source_json = self.DEFAULT_SEARCH_SOURCE_JSON.copy()
+        self._search_source_json = copy.deepcopy(self.DEFAULT_SEARCH_SOURCE_JSON)
 
     @property
     def url(self):
