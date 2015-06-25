@@ -81,3 +81,7 @@ class DashboardTestCase(unittest.TestCase):
         self.assertTrue(urllib.quote('(') in share_link)
         self.assertTrue(urllib.quote(':') in share_link)
         self.assertTrue(urllib.quote('') in share_link)
+
+    def test_clean_all_data_in_kibana_table(self):
+        self.ds.save(overwrite=True)
+        self.ds.clean()
