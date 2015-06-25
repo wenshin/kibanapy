@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
+import os
 import json
 import requests
 import copy
@@ -57,8 +58,11 @@ class KibanaService(object):
                              data=json.dumps(self.data), headers=headers)
 
     def delete(self):
+        '''删除当前实例对应的数据
+        '''
         return requests.delete(self.url)
 
-
-class KibanaElasticsearchOperator(KibanaService):
-    pass
+    def clean(self):
+        '''清理kibana 在 Elasticsearch dashboard 或者visualization 下的所有数据
+        '''
+        return requests.delete(os.path.dirname(self.url))
