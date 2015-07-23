@@ -29,7 +29,7 @@ class DashboardTestCase(unittest.TestCase):
 
     def setUp(self):
         query = 'abc'
-        self.kibana_host = '10.8.150.69'
+        self.kibana_host = '10.11.0.11'
         self.vis = Visualization(
             'kibanapyVis1', 'pie', aggs=PORT_AGGS, query=query, host=self.kibana_host)
 
@@ -81,6 +81,7 @@ class DashboardTestCase(unittest.TestCase):
         self.assertTrue(urllib.quote('(') in share_link)
         self.assertTrue(urllib.quote(':') in share_link)
         self.assertTrue(urllib.quote('') in share_link)
+        self.assertTrue(self.kibana_host not in share_link)
 
     def test_clean_all_data_in_kibana_table(self):
         self.ds.save(overwrite=True)
