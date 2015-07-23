@@ -39,7 +39,7 @@ class Dashboard(KibanaService):
     def add_visualization(self, vis):
         self.panels.append(vis.config)
 
-    def get_share_link(self, embed=False):
+    def get_share_link(self, base_url='', embed=False):
         _a = {}
         _a['filters'] = []
         _a['title'] = self.title
@@ -55,7 +55,7 @@ class Dashboard(KibanaService):
         query['_g'] = rison.dumps(_g).encode('utf-8')
 
         share_url = self.url_pattern_share.format(
-            base_url=self.base_url, title=self.title,
+            base_url=base_url, title=self.title,
             query=urllib.urlencode(query))
 
         if embed:
