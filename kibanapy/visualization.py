@@ -46,8 +46,6 @@ class Visualization(KibanaService):
         }
     }
 
-    url_pattern = '{base_url}/elasticsearch/{index}/visualization/{id}'
-
     def __init__(self, title, chart_type, id=None, aggs=None,
                  desc='', position={}, chart_config={}, **kwargs):
         '''
@@ -73,8 +71,9 @@ class Visualization(KibanaService):
 
     @property
     def url(self):
-        return self.url_pattern.format(
-            base_url=self.base_url, index=self.INDEX, id=self.id)
+        return self.URL_PATTERN_ES.format(
+            url_base=self.url_base, index=self.INDEX,
+            type='visualization', id=self.id)
 
     @property
     def vis_state(self):
