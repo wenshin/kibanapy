@@ -10,8 +10,7 @@ from .kibana import KibanaService
 
 class Dashboard(KibanaService):
 
-    url_pattern = '{base_url}/elasticsearch/{index}/dashboard/{id}'
-    url_pattern_share = '{base_url}/#/dashboard/{title}?{query}'
+    url_pattern_share = '{url_base}/#/dashboard/{title}?{query}'
 
     def __init__(self, title, id=None, description='', **kwargs):
         super(Dashboard, self).__init__(**kwargs)
@@ -22,8 +21,8 @@ class Dashboard(KibanaService):
 
     @property
     def url(self):
-        return self.url_pattern.format(base_url=self.base_url,
-                                       index=self.INDEX, id=self.id)
+        return self.URL_PATTERN_ES.format(
+            url_base=self.url_base, index=self.index, type='dashboard', id=self.id)
 
     @property
     def data(self):
@@ -39,7 +38,7 @@ class Dashboard(KibanaService):
     def add_visualization(self, vis):
         self.panels.append(vis.config)
 
-    def get_share_link(self, base_url='', embed=False):
+    def get_share_link(self, url_base='', embed=False):
         _a = {}
         _a['filters'] = []
         _a['title'] = self.title
@@ -55,7 +54,7 @@ class Dashboard(KibanaService):
         query['_g'] = rison.dumps(_g).encode('utf-8')
 
         share_url = self.url_pattern_share.format(
-            base_url=base_url, title=self.title,
+            url_base=url_base, title=self.title,
             query=urllib.urlencode(query))
 
         if embed:

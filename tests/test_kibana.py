@@ -39,6 +39,7 @@ class DashboardTestCase(unittest.TestCase):
     def tearDown(self):
         self.vis.delete()
         self.ds.delete()
+        self.ds.delete_indice('*')
 
     def test_save_visualization_not_overwrite_success(self):
         ''' 测试保存 visualization 使用非复写模式成功，重复写入返回409 Conflict
@@ -82,6 +83,11 @@ class DashboardTestCase(unittest.TestCase):
         self.assertTrue(urllib.quote(':') in share_link)
         self.assertTrue(urllib.quote('') in share_link)
         self.assertTrue(self.kibana_host not in share_link)
+
+    def test_create_indice_of_kibana(self):
+        self.ds.delete_indice('*')
+        resp = self.ds.create_indice('timestamp')
+        self.assertTrue(resp.status_code, 201)
 
     def test_clean_all_data_in_kibana_table(self):
         self.ds.save(overwrite=True)
