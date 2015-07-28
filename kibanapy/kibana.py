@@ -62,6 +62,9 @@ class KibanaService(object):
         ''' 创建Kibana 搜索的索引范围，默认为 '*'
         '''
         url_indice = self.format_url_indice(indice_id)
+        resp = requests.get(url_indice)
+        if resp.status_code == 200 and resp.json().get('found'):
+            return
         data = {
             'customFormats': json.dumps({}),
             'fields': json.dumps(fields),
