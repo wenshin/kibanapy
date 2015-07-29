@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-__version__ = '0.1.2'
-__release_date__ = '2015-07-23'
+__version__ = '0.1.3'
+__release_date__ = '2015-07-29'
 
 
 try:
