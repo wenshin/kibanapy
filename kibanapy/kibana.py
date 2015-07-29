@@ -53,18 +53,27 @@ class KibanaService(object):
         self._search_source_json['query'] = self.query
         return json.dumps(self._search_source_json)
 
+    @property
+    def url_get_config(self):
+        return self.URL_PATTERN_ES.format(
+            url_base=self.url_base, index=self.index,
+            type='config', id='_search?pretty=true&fields=buildNum')
+
     def format_url_indice(self, indice_id):
         return self.URL_PATTERN_ES.format(
             url_base=self.url_base, index=self.index,
             type='index-pattern', id=indice_id)
 
+    def get_kibana_config(self):
+        pass
+
     def create_indice(self, timefield, indice_id='*', fields=[], headers=HEADERS):
         ''' 创建Kibana 搜索的索引范围，默认为 '*'
         '''
-        url_indice = self.format_url_indice(indice_id)
-        resp = requests.get(url_indice)
-        if resp.status_code == 200 and resp.json().get('found'):
+        url_indice = self.get_url_if_indice_not_created(indice_id)
+        if not url_indice:
             return
+        self.set_config(indice_id)
         data = {
             'customFormats': json.dumps({}),
             'fields': json.dumps(fields),
@@ -72,6 +81,27 @@ class KibanaService(object):
             'title': indice_id
         }
         return requests.post(url_indice, data=json.dumps(data), headers=headers)
+
+    def get_url_if_indice_not_created(self, indice_id='*'):
+        url_indice = self.format_url_indice(indice_id)
+        resp = requests.get(url_indice)
+        if resp.status_code == 200 and resp.json().get('found'):
+            return
+        return url_indice
+
+    def set_config(self, default_index='*', headers=HEADERS):
+        resp = requests.get(self.url_get_config)
+        try:
+            config = resp.json().get('hits').get('hits')[0]
+            config_id = config.get('_id')
+            config_build_num = config.get('fields').get('buildNum')[0]
+        except (TypeError, IndexError):
+            raise KibanaGetConfigException
+
+        url_set_config = self.URL_PATTERN_ES.format(
+            url_base=self.url_base, index=self.index, type='config', id=config_id)
+        data = {'buildNum': config_build_num, 'defaultIndex': default_index}
+        return requests.post(url_set_config, data=json.dumps(data), headers=headers)
 
     def save(self, overwrite=False, headers=HEADERS):
         params = {} if overwrite else {'op_type': 'create'}
@@ -91,3 +121,7 @@ class KibanaService(object):
         '''清理kibana 在 Elasticsearch dashboard 或者visualization 下的所有数据
         '''
         return requests.delete(os.path.dirname(self.url), **kwargs)
+
+
+class KibanaGetConfigException(Exception):
+    pass
