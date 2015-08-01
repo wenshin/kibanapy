@@ -20,9 +20,9 @@ class KibanaService(object):
         }
     }
 
-    INDEX = ".kibana"
+    INDEX = '.kibana'
     HEADERS = {'content-type': 'application/json; charset=UTF-8'}
-    URL_PATTERN_ES = "{url_base}/elasticsearch/{index}/{type}/{id}"
+    URL_PATTERN_ES = '{url_base}/elasticsearch/{index}/{type}/{id}'
 
     def __init__(self, host='127.0.0.1', port=5601, query='*',
                  search_source_filter=[], index=INDEX):
@@ -91,6 +91,12 @@ class KibanaService(object):
 
     def set_config(self, default_index='*', headers=HEADERS):
         resp = requests.get(self.url_get_config)
+        if resp.status_code == 404:
+            # 创建 .kbiana 索引
+            requests.post(
+                os.path.dirname(os.path.dirname(self.url_get_config)),
+                data='{"settings":{"number_of_shards":1,"number_of_replicas":1}}',
+                headers=headers)
         try:
             config = resp.json().get('hits').get('hits')[0]
             config_id = config.get('_id')
