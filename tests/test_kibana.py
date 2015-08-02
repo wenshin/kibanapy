@@ -86,9 +86,9 @@ class DashboardTestCase(unittest.TestCase):
 
     def test_create_indice_of_kibana(self):
         self.ds.delete_indice('*')
-        resp = self.ds.create_indice('timestamp')
+        resp = self.ds.create_indice('4.0.2', 6008, 'timestamp')
         self.assertTrue(resp.status_code, 201)
-        resp_exist = self.ds.create_indice('timestamp')
+        resp_exist = self.ds.create_indice('4.0.2', 6008, 'timestamp')
         self.assertTrue(resp_exist is None)
 
     def test_clean_all_data_in_kibana_table(self):

@@ -53,34 +53,14 @@ class KibanaService(object):
         self._search_source_json['query'] = self.query
         return json.dumps(self._search_source_json)
 
-    @property
-    def url_get_config(self):
-        return self.URL_PATTERN_ES.format(
-            url_base=self.url_base, index=self.index,
-            type='config', id='_search?pretty=true&fields=buildNum')
+    def url_config(self, version):
+        return self.URL_PATTERN_ES.format(url_base=self.url_base, index=self.index,
+                                          type='config', id=version)
 
     def format_url_indice(self, indice_id):
         return self.URL_PATTERN_ES.format(
             url_base=self.url_base, index=self.index,
             type='index-pattern', id=indice_id)
-
-    def get_kibana_config(self):
-        pass
-
-    def create_indice(self, timefield, indice_id='*', fields=[], headers=HEADERS):
-        ''' 创建Kibana 搜索的索引范围，默认为 '*'
-        '''
-        url_indice = self.get_url_if_indice_not_created(indice_id)
-        if not url_indice:
-            return
-        self.set_config(indice_id)
-        data = {
-            'customFormats': json.dumps({}),
-            'fields': json.dumps(fields),
-            'timeFieldName': timefield,
-            'title': indice_id
-        }
-        return requests.post(url_indice, data=json.dumps(data), headers=headers)
 
     def get_url_if_indice_not_created(self, indice_id='*'):
         url_indice = self.format_url_indice(indice_id)
@@ -89,25 +69,33 @@ class KibanaService(object):
             return
         return url_indice
 
-    def set_config(self, default_index='*', headers=HEADERS):
-        resp = requests.get(self.url_get_config)
+    def create_indice(self, timefield, version, build_num,
+                      indice_id='*', fields=[], headers=HEADERS):
+        ''' 创建Kibana 搜索的索引范围，默认为 '*'
+        '''
+        url_indice = self.get_url_if_indice_not_created(indice_id)
+        if not url_indice:
+            return
+        self.set_config(version, build_num, indice_id)
+        data = {
+            'customFormats': json.dumps({}),
+            'fields': json.dumps(fields),
+            'timeFieldName': timefield,
+            'title': indice_id
+        }
+        return requests.post(url_indice, data=json.dumps(data), headers=headers)
+
+    def set_config(self, version, build_num, default_index='*', headers=HEADERS):
+        resp = requests.get(self.url_config(version))
+        # 创建 .kbiana 索引没有创建时需要先创建 .kibana 索引
         if resp.status_code == 404:
-            # 创建 .kbiana 索引
             requests.post(
-                os.path.dirname(os.path.dirname(self.url_get_config)),
+                os.path.dirname(os.path.dirname(self.url_config(version))),
                 data='{"settings":{"number_of_shards":1,"number_of_replicas":1}}',
                 headers=headers)
-        try:
-            config = resp.json().get('hits').get('hits')[0]
-            config_id = config.get('_id')
-            config_build_num = config.get('fields').get('buildNum')[0]
-        except (TypeError, IndexError):
-            raise KibanaGetConfigException
-
-        url_set_config = self.URL_PATTERN_ES.format(
-            url_base=self.url_base, index=self.index, type='config', id=config_id)
-        data = {'buildNum': config_build_num, 'defaultIndex': default_index}
-        return requests.post(url_set_config, data=json.dumps(data), headers=headers)
+        # 创建 .kbiana 配置
+        data = {'buildNum': build_num, 'defaultIndex': default_index}
+        return requests.post(self.url_config(version), data=json.dumps(data), headers=headers)
 
     def save(self, overwrite=False, headers=HEADERS):
         params = {} if overwrite else {'op_type': 'create'}
