@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 __version__ = '0.1.4'
-__release_date__ = '2015-08-01'
+__release_date__ = '2015-08-02'
 
 
 try:
