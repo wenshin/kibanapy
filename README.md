@@ -22,6 +22,8 @@ Features
 
 Release Note
 ------------
+### v0.1.4 20150802
+  * Init Kibana Config
 
 ### v0.1.3
   * Create Indices
